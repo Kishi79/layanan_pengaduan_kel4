@@ -10,6 +10,7 @@ class CreatePengaduansTable extends Migration
     {
         Schema::create('pengaduans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Added foreign key
             $table->string('judul');
             $table->text('deskripsi');
             $table->string('lampiran')->nullable();
