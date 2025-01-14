@@ -9,10 +9,15 @@ class Pengaduan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['judul', 'deskripsi', 'lampiran', 'nomor_tiket', 'status', 'user_id'];
+    protected $fillable = ['user_id', 'judul', 'deskripsi', 'lampiran', 'nomor_tiket', 'status'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tanggapans()
+    {
+        return $this->hasMany(Tanggapan::class);
     }
 }
