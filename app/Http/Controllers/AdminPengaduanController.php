@@ -3,28 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengaduan;
-use App\Models\Tanggapan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class AdminDashboardController extends Controller
+class AdminPengaduanController extends Controller
 {
-
     public function index()
     {
-        $totalPengaduan = Pengaduan::count();
-        $menungguTanggapan = Pengaduan::where('status', 'Menunggu Tanggapan')->count();
-        $selesai = Pengaduan::where('status', 'Selesai')->count();
-
         $pengaduans = Pengaduan::with(['user', 'tanggapans'])
             ->latest()
             ->paginate(10);
-
-        return view('admin.dashboard', compact(
-            'pengaduans',
-            'totalPengaduan',
-            'menungguTanggapan',
-            'selesai'
-        ));
+        return view('admin.pengaduan.index', compact('pengaduans'));
     }
 
     public function show(Pengaduan $pengaduan)
@@ -59,5 +48,19 @@ class AdminDashboardController extends Controller
         $pengaduan->update(['status' => $request->status]);
 
         return redirect()->back()->with('success', 'Status pengaduan berhasil diperbarui');
+    }
+
+    public function destroy(Pengaduan $pengaduan)
+    {
+        // Hapus lampiran jika ada
+        if ($pengaduan->lampiran) {
+            Storage::delete('public/lampiran/' . $pengaduan->lampiran);
+        }
+
+        // Hapus pengaduan dan tanggapan terkait (cascade delete di migration)
+        $pengaduan->delete();
+
+        return redirect()->route('admin.pengaduan.index')
+            ->with('success', 'Pengaduan berhasil dihapus');
     }
 }
