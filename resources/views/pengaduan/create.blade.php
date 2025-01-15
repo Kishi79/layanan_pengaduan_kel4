@@ -1,69 +1,69 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Buat Pengaduan Baru') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                        @csrf
-
-                        <div>
-                            <label for="judul" class="block font-medium text-sm text-gray-700">Judul Pengaduan</label>
-                            <input id="judul"
-                                type="text"
-                                name="judul"
-                                value="{{ old('judul') }}"
-                                class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                required
-                                autofocus>
-                            @error('judul')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="deskripsi" class="block font-medium text-sm text-gray-700">Deskripsi</label>
-                            <textarea id="deskripsi"
-                                name="deskripsi"
-                                rows="4"
-                                class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                required>{{ old('deskripsi') }}</textarea>
-                            @error('deskripsi')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="lampiran" class="block font-medium text-sm text-gray-700">Lampiran (Opsional)</label>
-                            <input id="lampiran"
-                                type="file"
-                                name="lampiran"
-                                class="block mt-1 w-full"
-                                accept=".pdf,.jpg,.jpeg,.png">
-                            <p class="text-gray-600 text-xs mt-1">Format yang diizinkan: PDF, JPG, JPEG, PNG (Maks. 2MB)</p>
-                            @error('lampiran')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <a href="{{ route('pengaduan.index') }}"
-                                class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 active:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-4">
-                                Batal
-                            </a>
-                            <button type="submit"
-                                class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                {{ __('Kirim Pengaduan') }}
-                            </button>
-                        </div>
-                    </form>
+@section('content')
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Buat Pengaduan Baru</h2>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Silakan isi form di bawah ini untuk membuat pengaduan baru.
+                    </p>
                 </div>
+
+                <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+
+                    <div>
+                        <label for="judul" class="block text-sm font-medium text-gray-700">Judul Pengaduan</label>
+                        <input type="text" name="judul" id="judul"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                               value="{{ old('judul') }}" required>
+                        @error('judul')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                        <textarea name="deskripsi" id="deskripsi" rows="5"
+                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  required>{{ old('deskripsi') }}</textarea>
+                        @error('deskripsi')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="lampiran" class="block text-sm font-medium text-gray-700">
+                            Lampiran (Opsional)
+                        </label>
+                        <div class="mt-1">
+                            <input type="file" name="lampiran" id="lampiran"
+                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <p class="mt-1 text-sm text-gray-500">
+                                Format yang didukung: PDF, JPG, JPEG, PNG (Maks. 2MB)
+                            </p>
+                        </div>
+                        @error('lampiran')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end">
+                        <a href="{{ route('pengaduan.index') }}"
+                           class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Batal
+                        </a>
+                        <button type="submit"
+                                class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Kirim Pengaduan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection
