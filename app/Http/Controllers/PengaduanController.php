@@ -32,9 +32,9 @@ class PengaduanController extends Controller
         ]);
 
         $data = $request->all();
-        // Tambahkan user_id dari user yang sedang login
         $data['user_id'] = auth()->id();
         $data['nomor_tiket'] = 'TKT-' . date('YmdHis') . Str::random(5);
+        $data['status'] = 'Menunggu Tanggapan';
 
         if ($request->hasFile('lampiran')) {
             $lampiran = $request->file('lampiran');
@@ -51,16 +51,19 @@ class PengaduanController extends Controller
 
     public function show(Pengaduan $pengaduan)
     {
+        $this->authorize('view', $pengaduan);
         return view('pengaduan.show', compact('pengaduan'));
     }
 
     public function edit(Pengaduan $pengaduan)
     {
+        $this->authorize('update', $pengaduan);
         return view('pengaduan.edit', compact('pengaduan'));
     }
 
     public function update(Request $request, Pengaduan $pengaduan)
     {
+        $this->authorize('update', $pengaduan);
 
         $request->validate([
             'judul' => 'required|string|max:255',
@@ -68,10 +71,9 @@ class PengaduanController extends Controller
             'lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['judul', 'deskripsi']);
 
         if ($request->hasFile('lampiran')) {
-            // Delete old file if exists
             if ($pengaduan->lampiran) {
                 Storage::delete('public/lampiran/' . $pengaduan->lampiran);
             }
@@ -90,6 +92,7 @@ class PengaduanController extends Controller
 
     public function destroy(Pengaduan $pengaduan)
     {
+        $this->authorize('delete', $pengaduan);
 
         if ($pengaduan->lampiran) {
             Storage::delete('public/lampiran/' . $pengaduan->lampiran);
