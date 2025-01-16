@@ -29,9 +29,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('pengaduan')->name('pengaduan.')->group(function () {
+        Route::get('export', [AdminPengaduanController::class, 'export'])->name('export');
+        Route::post('{pengaduan}/tanggapan', [AdminPengaduanController::class, 'storeTanggapan'])->name('tanggapan');
+        Route::patch('{pengaduan}/status', [AdminPengaduanController::class, 'updateStatus'])->name('status');
+    });
     Route::resource('pengaduan', AdminPengaduanController::class);
-    Route::post('/pengaduan/{pengaduan}/tanggapan', [AdminPengaduanController::class, 'storeTanggapan'])->name('pengaduan.tanggapan');
-    Route::patch('/pengaduan/{pengaduan}/status', [AdminPengaduanController::class, 'updateStatus'])->name('pengaduan.status');
     Route::resource('users', AdminUserController::class);
 });
 
