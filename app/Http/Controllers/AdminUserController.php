@@ -9,10 +9,49 @@ use Illuminate\Validation\Rules;
 
 class AdminUserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
-        return view('admin.users.index', compact('users'));
+        $query = User::query();
+
+        // Filter berdasarkan role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Filter berdasarkan status verifikasi email
+        if ($request->filled('verified')) {
+            if ($request->verified === 'yes') {
+                $query->whereNotNull('email_verified_at');
+            } else {
+                $query->whereNull('email_verified_at');
+            }
+        }
+
+        // Pencarian berdasarkan nama atau email
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('email', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Sorting
+        $sortField = $request->sort_by ?? 'created_at';
+        $sortOrder = $request->sort_order ?? 'desc';
+        $query->orderBy($sortField, $sortOrder);
+
+        // Get statistics for dashboard cards
+        $stats = [
+            'total' => User::count(),
+            'admin' => User::where('role', 'admin')->count(),
+            'user' => User::where('role', 'user')->count(),
+            'verified' => User::whereNotNull('email_verified_at')->count(),
+        ];
+
+        $users = $query->paginate(10)->withQueryString();
+
+        return view('admin.users.index', compact('users', 'stats', 'request'));
     }
 
     public function create()
