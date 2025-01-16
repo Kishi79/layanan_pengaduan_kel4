@@ -11,20 +11,21 @@ class AdminDashboardController extends Controller
 
     public function index()
     {
-        $totalPengaduan = Pengaduan::count();
-        $menungguTanggapan = Pengaduan::where('status', 'Menunggu Tanggapan')->count();
-        $selesai = Pengaduan::where('status', 'Selesai')->count();
+        // Stats untuk cards
+        $stats = [
+            'total' => Pengaduan::count(),
+            'menunggu' => Pengaduan::where('status', 'Menunggu Tanggapan')->count(),
+            'diproses' => Pengaduan::where('status', 'Diproses')->count(),
+            'selesai' => Pengaduan::where('status', 'Selesai')->count(),
+        ];
 
-        $pengaduans = Pengaduan::with(['user', 'tanggapans'])
+        // Pengaduan terbaru
+        $recentPengaduans = Pengaduan::with('user')
             ->latest()
-            ->paginate(10);
+            ->take(5)
+            ->get();
 
-        return view('admin.dashboard', compact(
-            'pengaduans',
-            'totalPengaduan',
-            'menungguTanggapan',
-            'selesai'
-        ));
+        return view('admin.dashboard', compact('stats', 'recentPengaduans'));
     }
 
     public function show(Pengaduan $pengaduan)
